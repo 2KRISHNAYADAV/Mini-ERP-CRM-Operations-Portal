@@ -9,9 +9,11 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg';
   /** Optional element rendered to the right of the title (e.g., a Download PDF button) */
   headerAction?: React.ReactNode;
+  /** Optional footer — rendered outside the scrollable body, pinned to bottom */
+  footer?: React.ReactNode;
 }
 
-export const Modal = ({ isOpen, onClose, title, children, size = 'md', headerAction }: ModalProps) => {
+export const Modal = ({ isOpen, onClose, title, children, size = 'md', headerAction, footer }: ModalProps) => {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -37,6 +39,9 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', headerAct
         style={{ maxWidth: widthMap[size] }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Drag handle — visible on mobile only */}
+        <div className="modal-drag-handle" aria-hidden="true" />
+
         <div className="modal-header">
           <h3 className="modal-title">{title}</h3>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -46,7 +51,11 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md', headerAct
             </button>
           </div>
         </div>
+
         <div className="modal-body">{children}</div>
+
+        {/* Pinned footer — outside the scrollable body */}
+        {footer && <div className="modal-footer">{footer}</div>}
       </div>
     </div>
   );
