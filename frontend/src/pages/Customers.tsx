@@ -188,8 +188,21 @@ export default function Customers() {
       </div>
 
       {/* Add/Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editTarget ? 'Edit Customer' : 'Add Customer'} size="md">
-        <form onSubmit={handleSave}>
+      <Modal
+        isOpen={showModal}
+        onClose={closeModal}
+        title={editTarget ? 'Edit Customer' : 'Add Customer'}
+        size="md"
+        footer={
+          <>
+            <button type="button" className="btn btn-outline" onClick={closeModal}>Cancel</button>
+            <button form="customer-form" type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Saving...' : editTarget ? 'Update Customer' : 'Add Customer'}
+            </button>
+          </>
+        }
+      >
+        <form id="customer-form" onSubmit={handleSave}>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Customer Name *</label>
@@ -244,12 +257,6 @@ export default function Customers() {
           <div className="form-group">
             <label className="form-label">Notes</label>
             <textarea className="input" rows={2} value={formData.notes || ''} onChange={(e) => set('notes', e.target.value)} />
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline" onClick={closeModal}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Saving...' : editTarget ? 'Update Customer' : 'Add Customer'}
-            </button>
           </div>
         </form>
       </Modal>
