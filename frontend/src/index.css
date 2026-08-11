@@ -1355,10 +1355,277 @@ button { font-family: inherit; }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN SYSTEM
+<<<<<<< HEAD
    Breakpoints: 1280px | 1100px | 768px | 480px | 360px
 ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Large Desktop (≤ 1280px) ─────────────────────────────────────────── */
+=======
+   Breakpoints: 1280px | 1100px | 768px | 640px | 480px | 360px | 320px
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Large Desktop (≤ 1280px) ─────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ─── Tablet (≤ 1100px) ────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .stat-grid         { grid-template-columns: repeat(2, 1fr); }
+  .inventory-summary { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid    { grid-template-columns: 1fr; }
+  .page-content      { padding: 1.25rem; }
+}
+
+/* ─── Mobile (≤ 768px) — Main breakpoint ───────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-w: 100vw;
+    --navbar-h: 56px;
+  }
+
+  /* ── Root layout ──────────────────────────────────── */
+  html { font-size: 14px; }
+  body { overflow-x: hidden; }
+  .app-container { flex-direction: column; }
+  .main-content  { margin-left: 0 !important; min-width: 0; }
+
+  /* ── Sidebar — slide-over drawer ─────────────────── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 80vw;
+    max-width: 280px;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform var(--t-slow) var(--ease);
+    box-shadow: var(--shadow-xl);
+  }
+  .sidebar.sidebar-open  { transform: translateX(0); }
+  .sidebar-overlay       { display: block; }
+  .navbar-hamburger      { display: flex; }
+
+  /* ── Navbar ──────────────────────────────────────── */
+  .navbar           { padding: 0 1rem; height: var(--navbar-h); }
+  .navbar-user-name { display: none; }
+  .navbar-title     { font-size: 0.9375rem; }
+
+  /* ── Page content ────────────────────────────────── */
+  .page-content {
+    padding: 0.875rem;
+    overflow-x: hidden;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .page-title    { font-size: 1.15rem; }
+  .page-subtitle { font-size: 0.75rem; }
+
+  /* ── Stat cards ──────────────────────────────────── */
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem;
+    margin-bottom: 0.875rem;
+  }
+  .stat-card   { padding: 0.875rem 1rem; gap: 0.75rem; }
+  .stat-value  { font-size: 1.5rem; }
+  .stat-icon   { width: 40px; height: 40px; }
+
+  /* ── Dashboard grid ──────────────────────────────── */
+  .dashboard-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+
+  /* ── Cards ───────────────────────────────────────── */
+  .card        { padding: 1rem; border-radius: var(--radius-lg); }
+  .card-header { padding-bottom: 0.625rem; margin-bottom: 0.75rem; }
+  .card-title  { font-size: 0.875rem; }
+
+  /* ── Inventory summary ───────────────────────────── */
+  .inventory-summary { grid-template-columns: 1fr 1fr; gap: 0.625rem; }
+  .inventory-card    { padding: 0.75rem; }
+
+  /* ── Search ──────────────────────────────────────── */
+  .search-input {
+    max-width: 100%;
+    font-size: 0.875rem;
+  }
+  .search-bar { margin-bottom: 0.75rem; }
+
+  /* ── Forms ───────────────────────────────────────── */
+  .form-row   { grid-template-columns: 1fr; gap: 0; }
+  .form-group { margin-bottom: 0.875rem; }
+  .form-label { font-size: 0.8rem; }
+
+  /* ── Inputs & selects ────────────────────────────── */
+  .input,
+  select.input,
+  textarea.input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    font-size: 0.9375rem;  /* prevent iOS zoom (≥16px effective) */
+    min-height: 44px;
+  }
+
+  /* ── Table ───────────────────────────────────────── */
+  .table-card  { border-radius: var(--radius-lg); }
+  .table-wrap  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table th    { padding: 0.625rem 0.75rem; font-size: 0.7rem; }
+  .table td    { padding: 0.625rem 0.75rem; font-size: 0.8125rem; }
+
+  /* ── Action buttons ──────────────────────────────── */
+  .action-btns { flex-wrap: wrap; gap: 0.25rem; }
+  .btn-icon    { padding: 0.5rem; }
+
+  /* ── Modal — bottom sheet ────────────────────────── */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .modal-box {
+    max-width: none !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    box-sizing: border-box;
+    max-height: 90vh;
+    min-height: 60vh;
+    overflow: hidden;
+    animation: slideUpSheet var(--t-slow) var(--ease) both;
+  }
+  .modal-drag-handle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin: 12px auto 4px;
+    flex-shrink: 0;
+  }
+  .modal-header { padding: 0.75rem 1rem; }
+  .modal-title  { font-size: 0.9375rem; }
+  .modal-body   { padding: 1rem; }
+  .modal-footer {
+    flex-direction: column;
+    justify-content: stretch;
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+    padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+  }
+  .modal-footer .btn {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 0.9375rem;
+  }
+
+  /* ── Challan product row ─────────────────────────── */
+  .challan-products-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .challan-product-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.625rem;
+  }
+  .challan-product-row select.input { grid-column: 1 / -1; }
+  .challan-product-row input[type="number"] {
+    width: 100% !important;
+    grid-column: 1;
+  }
+  .challan-line-info              { grid-column: 2; font-size: 0.8125rem; }
+  .challan-product-row .btn-icon  { grid-column: 3; }
+  .challan-summary {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  /* ── Login ───────────────────────────────────────── */
+  .login-right-pane { display: none; }
+  .login-container  { justify-content: center; }
+  .login-left-pane  { padding: 1.5rem 1rem; }
+  .login-card       { padding: 1.5rem 1.25rem; }
+  .login-demo-grid  { grid-template-columns: repeat(2, 1fr); }
+  .login-title      { font-size: 1.25rem; }
+
+  /* ── Toast ───────────────────────────────────────── */
+  .toast-container  { right: 0.75rem; left: 0.75rem; max-width: none; }
+  .toast            { min-width: 0; }
+
+  /* ── Badges ──────────────────────────────────────── */
+  .badge { font-size: 0.7rem; padding: 0.175rem 0.5rem; }
+
+  /* ── Empty state ─────────────────────────────────── */
+  .empty-state { padding: 2.5rem 1rem; }
+}
+
+/* ─── Small Mobile (≤ 480px) ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .stat-grid, .inventory-summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .stat-card   { padding: 0.75rem; }
+  .stat-value  { font-size: 1.35rem; }
+  .stat-icon   { width: 36px; height: 36px; }
+  .stat-label  { font-size: 0.73rem; }
+
+  .page-title  { font-size: 1.05rem; }
+  .page-header { margin-bottom: 0.75rem; }
+
+  .navbar-role-badge { display: none; }
+
+  .login-card  { padding: 1.25rem 1rem; }
+
+  .card { padding: 0.875rem; }
+
+  /* Wider touch targets for action icon buttons */
+  .btn-icon { padding: 0.5rem; min-width: 36px; min-height: 36px; }
+}
+
+/* ─── Very Small Mobile (≤ 360px) ──────────────────────────────────────── */
+@media (max-width: 360px) {
+  html { font-size: 13px; }
+
+  .stat-grid, .inventory-summary { grid-template-columns: 1fr; }
+
+  .page-content { padding: 0.625rem; }
+  .modal-body   { padding: 0.75rem; }
+  .modal-header { padding: 0.625rem 0.75rem; }
+  .modal-footer { padding: 0.75rem; }
+
+  .stat-value  { font-size: 1.25rem; }
+  .stat-icon   { width: 32px; height: 32px; }
+
+  .card { padding: 0.75rem; }
+
+  .table th, .table td { padding: 0.5rem; font-size: 0.75rem; }
+
+  /* Login */
+  .login-card { padding: 1rem 0.875rem; }
+  .login-demo-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── Minimum (≤ 320px) ─────────────────────────────────────────────────── */
+@media (max-width: 320px) {
+  .modal-footer { gap: 0.5rem; }
+  .modal-footer .btn { font-size: 0.875rem; min-height: 44px; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .page-content { padding: 0.5rem; }
+}
+
+>>>>>>> 4037a326110b0e91fbcf979fe34900783406e716
 @media (max-width: 1280px) {
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -1447,6 +1714,7 @@ button { font-family: inherit; }
   }
   .search-bar { margin-bottom: 1rem; }
 
+<<<<<<< HEAD
   /* ── Forms ───────────────────────────────────────── */
   .form-row   { grid-template-columns: 1fr; gap: 0; }
   .form-group { margin-bottom: 1rem; }
@@ -1461,6 +1729,36 @@ button { font-family: inherit; }
     box-sizing: border-box;
     font-size: 0.9375rem;  /* prevent iOS zoom (≥16px effective) */
     min-height: 44px;
+=======
+  /* Modal — bottom sheet on mobile */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .modal-box {
+    max-width: none !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    box-sizing: border-box;
+    max-height: 90vh;
+    min-height: 60vh;
+    overflow: hidden;
+    animation: slideUpSheet var(--t-slow) var(--ease) both;
+  }
+  .modal-drag-handle {
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin: 12px auto 4px;
+    flex-shrink: 0;
+  }
+  .modal-footer {
+    padding-bottom: calc(0.875rem + env(safe-area-inset-bottom));
+>>>>>>> 4037a326110b0e91fbcf979fe34900783406e716
   }
 
   /* ── Table ───────────────────────────────────────── */
@@ -1598,6 +1896,58 @@ button { font-family: inherit; }
   .table th, .table td { padding: 0.625rem; font-size: 0.8rem; }
 
   /* Login */
+<<<<<<< HEAD
   .login-demo-grid { grid-template-columns: 1fr; }
+=======
+  .login-right-pane { display: none; }
+  .login-container  { justify-content: center; }
+  .login-left-pane  { padding: 1.5rem 1rem; }
+  .login-demo-grid  { grid-template-columns: repeat(2, 1fr); }
+
+  /* Navbar */
+  .navbar { padding: 0 1rem; }
+  .navbar-user-name { display: none; }
+
+  /* Page */
+  .page-content { padding: 0.875rem; }
+  .page-header  { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+
+  /* Action Buttons */
+  .action-btns { flex-wrap: wrap; }
+
+  /* Table */
+  .table th, .table td { padding: 0.625rem 0.75rem; font-size: 0.8125rem; }
+
+  /* Challan */
+  .challan-product-row { 
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .challan-product-row select.input { 
+    grid-column: 1 / -1; 
+  }
+  .challan-product-row input[type="number"] { 
+    width: 100% !important; 
+    grid-column: 1; 
+  }
+  .challan-line-info { grid-column: 2; }
+  .challan-product-row .btn-icon-danger { grid-column: 3; }
+
+  /* Buttons in modal footer — stack on small screens */
+  .modal-footer { 
+    flex-direction: column;
+    justify-content: stretch; 
+    gap: 0.75rem;
+  }
+  .modal-footer .btn { 
+    width: 100%; 
+    min-height: 48px;
+    justify-content: center; 
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+>>>>>>> 4037a326110b0e91fbcf979fe34900783406e716
 }
 

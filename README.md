@@ -1,6 +1,47 @@
-# Mini ERP + CRM Operations Portal
+<div align="center">
 
-A production-quality Mini ERP + CRM portal built with React TypeScript, Node.js Express TypeScript, and Supabase PostgreSQL.
+# 🏢 Mini ERP + CRM Operations Portal
+
+**A production-quality Mini ERP + CRM system for Sales, Inventory, and Customer Management**
+
+Built with **React TypeScript**, **Node.js Express TypeScript**, and **Supabase PostgreSQL**
+
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?logo=react)](#)
+[![Backend](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js)](#)
+[![Database](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-3ECF8E?logo=supabase)](#)
+[![Auth](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens)](#)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#)
+
+</div>
+
+---
+
+## 🔗 Live Deployments
+
+| Service | URL | Host |
+|---|---|---|
+| 🖥️ Frontend | [mini-erp-crm-operations-portal-navy.vercel.app/login](https://mini-erp-crm-operations-portal-navy.vercel.app/login) | Vercel |
+| ⚙️ Backend API | [mini-erp-crm-operations-portal-e2ig.onrender.com](https://mini-erp-crm-operations-portal-e2ig.onrender.com/) | Render |
+
+---
+
+## 📖 Table of Contents
+
+1. [Tech Stack](#-tech-stack)
+2. [System Architecture](#-system-architecture)
+3. [Project Structure](#️-project-structure)
+4. [Quick Start](#-quick-start)
+5. [Demo Accounts](#-demo-accounts)
+6. [Modules](#-modules)
+7. [Core Flows](#-core-flows)
+8. [Database Model (High-Level)](#-database-model-high-level)
+9. [API Reference](#-api-reference)
+10. [API Health Check](#-api-health-check)
+11. [Security](#️-security)
+12. [Available Scripts](#-available-scripts)
+13. [Deployment Notes](#-deployment-notes)
+14. [Local Dev Notes & Troubleshooting](#-local-dev-notes--troubleshooting)
+15. [License](#-license)
 
 ---
 
@@ -13,6 +54,44 @@ A production-quality Mini ERP + CRM portal built with React TypeScript, Node.js 
 | Database | Supabase PostgreSQL                |
 | Auth     | JWT (jsonwebtoken + bcryptjs)     |
 | Styling  | Vanilla CSS Design System         |
+
+---
+
+## 🏗 System Architecture
+
+The portal follows a classic **3-tier architecture**: a React SPA talks to an Express REST API over HTTPS, and the API is the only layer that talks to the Supabase PostgreSQL database. JWTs issued at login are stored client-side and sent on every subsequent request to prove identity and role.
+
+```mermaid
+flowchart LR
+    subgraph Client["🖥️ Frontend (Vercel)"]
+        UI[React 18 + TypeScript + Vite]
+        AuthCtx[AuthContext]
+        Axios[Axios API Layer]
+        UI --> AuthCtx --> Axios
+    end
+
+    subgraph Server["⚙️ Backend (Render)"]
+        MW[Middleware<br/>Auth · Validation · Error Handling]
+        Routes[Express Routers]
+        Ctrl[Controllers]
+        Svc[Services<br/>e.g. Challan Service]
+        MW --> Routes --> Ctrl --> Svc
+    end
+
+    subgraph DB["🗄️ Supabase PostgreSQL"]
+        Tables[(Users · Customers · Products<br/>Inventory · Challans · Challan Items)]
+    end
+
+    Axios -- "HTTPS + JWT Bearer Token" --> MW
+    Svc -- "SQL over SSL (pooled connection)" --> Tables
+    Tables -- "Query Results" --> Svc
+    Svc -- "JSON Response" --> Axios
+```
+
+**Why this shape works well for an ERP/CRM tool:**
+- **Frontend never touches the database directly** — all business rules (stock deduction, role checks, price snapshots) live in the backend, so the same rules apply no matter which client calls the API.
+- **Services layer** (e.g. the Challan service) isolates multi-step business logic — like "check stock → deduct stock → write movement record" — from the HTTP layer, making it easier to test and reuse.
+- **Stateless JWT auth** means the backend can scale horizontally (e.g. multiple Render instances) without needing shared session storage.
 
 ---
 
@@ -45,6 +124,14 @@ caseinfo/
         └── types/          # Shared TypeScript types
 ```
 
+**How this maps to the architecture diagram above:**
+- `frontend/src/api/` = the **Axios API Layer**
+- `frontend/src/context/AuthContext` = the **AuthContext** box
+- `backend/src/middleware/` = the **Middleware** box (auth check, Zod validation, error handling)
+- `backend/src/routes/` + `controllers/` = **Routers → Controllers**
+- `backend/src/services/` = the **Services** box (e.g. `challanService` orchestrates stock checks + deduction + movement logging)
+- `backend/src/db.ts` = the pooled connection into **Supabase PostgreSQL**
+
 ---
 
 ## 🚀 Quick Start
@@ -61,7 +148,7 @@ caseinfo/
 
 1. Open your Supabase project → **SQL Editor**
 2. Paste and run the contents of `backend/schema.sql`
-3. Note your **Project connection string** from:  
+3. Note your **Project connection string** from:
    *Project Settings → Database → Connection string → URI (Transaction mode)*
 
 ---
@@ -102,16 +189,46 @@ npm run dev    # Start frontend on http://localhost:5173
 
 ---
 
+### Run Both Together
+
+```bash
+# Terminal 1 — Backend
+cd backend
+npm run dev
+
+# Terminal 2 — Frontend
+cd frontend
+npm run dev
+```
+
+| Server              | Port | Stop                          |
+|---------------------|------|--------------------------------|
+| Backend             | 5000 | `Ctrl + C` in its terminal    |
+| Frontend            | 5173 | `Ctrl + C` in its terminal    |
+
+---
+
 ## 🔐 Demo Accounts
 
 All accounts use password: `password123`
 
 | Role      | Email                  | Permissions                              |
-|-----------|------------------------|------------------------------------------|
+|-----------|------------------------|-------------------------------------------|
 | Admin     | admin@test.com         | Full access to all modules               |
 | Sales     | sales@test.com         | Customers, Products (view), Challans     |
 | Warehouse | warehouse@test.com     | Products, Inventory Management           |
 | Accounts  | accounts@test.com      | Customers (view), Challans (view)        |
+
+**Why seeded demo accounts instead of real ones?**
+
+- **Security & best practices** — real user credentials should never be hardcoded or committed to a git repository. If the repo is public, anyone could see them.
+- **Testing Role-Based Access Control (RBAC)** — the app has 4 roles (Admin, Sales, Warehouse, Accounts), each with different permissions. Seeded accounts let you instantly log in as any role and see how the UI and permissions change.
+- **Database portability** — since the database lives on Supabase, a fresh connection starts empty. Running `npx tsx src/seed.ts` quickly populates it with working test accounts.
+
+**Using real accounts in production:**
+The login endpoint already hashes and compares passwords with `bcryptjs` and signs sessions with a secure JWT — it's production-ready. To add real users you can either:
+1. Insert a new row into the `users` table via the Supabase SQL editor with a securely hashed password, or
+2. Build a sign-up route/page that registers users programmatically through the existing auth logic.
 
 ---
 
@@ -149,29 +266,207 @@ All accounts use password: `password123`
 
 ---
 
+## 🔄 Core Flows
+
+### A. Authentication Flow
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend (React)
+    participant A as Backend (Express)
+    participant DB as Supabase PostgreSQL
+
+    U->>F: Enter email + password
+    F->>A: POST /api/auth/login
+    A->>DB: Look up user by email
+    DB-->>A: Hashed password
+    A->>A: bcrypt.compare(password, hash)
+    alt Valid credentials
+        A->>A: Sign JWT (userId, role)
+        A-->>F: 200 OK + JWT token
+        F->>F: Store token, set AuthContext
+        F->>A: GET /api/auth/me (on every app boot)
+        A-->>F: Current user + role
+        F-->>U: Redirect to Dashboard
+    else Invalid credentials
+        A-->>F: 401 Unauthorized
+        F-->>U: Show login error
+    end
+```
+
+### B. Sales Challan Creation → Confirmation Flow
+
+This is the most business-critical flow in the system: it is the only flow that mutates stock levels.
+
+```mermaid
+flowchart TD
+    Start([Sales user opens New Challan]) --> AddLines[Add product lines<br/>qty + auto price lookup]
+    AddLines --> Calc[Live total calculated in UI]
+    Calc --> Choice{Save as Draft<br/>or Confirm?}
+
+    Choice -- Save as Draft --> Draft[POST /api/challans<br/>status = draft]
+    Draft --> DraftSaved[Challan saved,<br/>NO stock changes yet]
+
+    Choice -- Confirm --> Confirm[PATCH /api/challans/:id/confirm]
+    Confirm --> StockCheck{Enough stock<br/>for every line?}
+    StockCheck -- No --> Reject[❌ 400 Error:<br/>Insufficient stock]
+    StockCheck -- Yes --> Deduct[Deduct stock per line]
+    Deduct --> Movement[Create OUT movement<br/>record per line]
+    Movement --> Snapshot[Price/name/SKU already<br/>snapshotted at creation]
+    Snapshot --> Confirmed[✅ Challan status = confirmed]
+
+    DraftSaved --> CancelOpt{User cancels draft?}
+    CancelOpt -- Yes --> Cancel[PATCH /api/challans/:id/cancel]
+    CancelOpt -- No --> Confirm
+
+    Confirmed --> PDF[GET /api/challans/:id/pdf<br/>Generate & download PDF]
+```
+
+**Key design decisions in this flow:**
+- **Draft vs. Confirm** — separating "save" from "commit" lets Sales prepare a challan without risking a stock deduction until it is finalized.
+- **Snapshotting** — product name, SKU, and price are copied onto the challan line at creation time, so later edits to the product catalog never retroactively change historical challans.
+- **Atomic stock deduction** — stock availability is re-checked at confirm time (not just at draft time), and every deduction writes a paired inventory movement record for a full audit trail.
+
+### C. Inventory Adjustment Flow
+
+```mermaid
+flowchart LR
+    W[Warehouse user] --> Adjust[POST /api/inventory/adjust]
+    Adjust --> Type{IN or OUT?}
+    Type -- IN --> IncStock[Increase product stock]
+    Type -- OUT --> DecStock[Decrease product stock]
+    IncStock --> Log[Write movement log entry]
+    DecStock --> Log
+    Log --> Badge[Product stock badge<br/>updates: In Stock / Low / Out]
+```
+
+---
+
+## 🗃 Database Model (High-Level)
+## Table `users`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `name` | `varchar` |  |
+| `email` | `varchar` |  Unique |
+| `password_hash` | `varchar` |  |
+| `role` | `varchar` |  |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `customers`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `customer_name` | `varchar` |  |
+| `mobile_number` | `varchar` |  Nullable |
+| `email` | `varchar` |  Nullable |
+| `business_name` | `varchar` |  Nullable |
+| `gst_number` | `varchar` |  Nullable |
+| `customer_type` | `varchar` |  Nullable |
+| `address` | `text` |  Nullable |
+| `status` | `varchar` |  Nullable |
+| `follow_up_date` | `date` |  Nullable |
+| `notes` | `text` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `products`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `product_name` | `varchar` |  |
+| `sku` | `varchar` |  Unique |
+| `category` | `varchar` |  Nullable |
+| `unit_price` | `numeric` |  |
+| `current_stock` | `int4` |  Nullable |
+| `min_stock_alert` | `int4` |  Nullable |
+| `location` | `varchar` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `stock_movements`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `product_id` | `int4` |  Nullable |
+| `quantity_changed` | `int4` |  |
+| `movement_type` | `varchar` |  |
+| `reason` | `varchar` |  Nullable |
+| `created_by` | `int4` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `challans`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `challan_number` | `varchar` |  Unique |
+| `customer_id` | `int4` |  Nullable |
+| `status` | `varchar` |  Nullable |
+| `total_quantity` | `int4` |  |
+| `created_by` | `int4` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `challan_items`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `challan_id` | `int4` |  Nullable |
+| `product_id` | `int4` |  Nullable |
+| `product_name_snapshot` | `varchar` |  |
+| `sku_snapshot` | `varchar` |  Nullable |
+| `unit_price_snapshot` | `numeric` |  Nullable |
+| `quantity` | `int4` |  |
+
+<img width="1536" height="1024" alt="gair" src="https://github.com/user-attachments/assets/189b43a2-f838-471f-9094-901565ceeb48" />
+<img width="1528" height="795" alt="supabase-schema-ggqkfpbnzokjalokuhps" src="https://github.com/user-attachments/assets/1e05ce8c-b54e-449e-9ad7-2796c5f07515" />
+
+
+
+
+> This is a simplified, illustrative model based on the modules described above — see `backend/schema.sql` for the authoritative schema.
+
+---
+
 ## 🔌 API Reference
 
 | Method | Endpoint                     | Auth  | Description               |
-|--------|------------------------------|-------|---------------------------|
+|--------|-------------------------------|-------|----------------------------|
 | POST   | /api/auth/login              | ❌    | Login                     |
 | GET    | /api/auth/me                 | ✅    | Get current user          |
 | GET    | /api/dashboard               | ✅    | Dashboard stats           |
 | GET    | /api/customers               | ✅    | List customers            |
-| POST   | /api/customers               | Sales | Create customer           |
-| PUT    | /api/customers/:id           | Sales | Update customer           |
-| DELETE | /api/customers/:id           | Admin | Delete customer           |
-| GET    | /api/products                | ✅    | List products             |
-| POST   | /api/products                | Wh    | Create product            |
-| PUT    | /api/products/:id            | Wh    | Update product            |
-| DELETE | /api/products/:id            | Admin | Delete product            |
-| GET    | /api/inventory/movements     | ✅    | List stock movements      |
-| POST   | /api/inventory/adjust        | Wh    | Manual stock adjustment   |
-| GET    | /api/challans                | ✅    | List challans             |
-| GET    | /api/challans/:id            | ✅    | Challan with items        |
-| POST   | /api/challans                | Sales | Create challan            |
-| PATCH  | /api/challans/:id/cancel     | Sales | Cancel draft challan      |
+| POST   | /api/customers               | Sales | Create customer            |
+| PUT    | /api/customers/:id           | Sales | Update customer            |
+| DELETE | /api/customers/:id           | Admin | Delete customer            |
+| GET    | /api/products                | ✅    | List products              |
+| POST   | /api/products                | Wh    | Create product              |
+| PUT    | /api/products/:id            | Wh    | Update product              |
+| DELETE | /api/products/:id            | Admin | Delete product              |
+| GET    | /api/inventory/movements     | ✅    | List stock movements       |
+| POST   | /api/inventory/adjust        | Wh    | Manual stock adjustment     |
+| GET    | /api/challans                | ✅    | List challans               |
+| GET    | /api/challans/:id            | ✅    | Challan with items          |
+| POST   | /api/challans                | Sales | Create challan               |
+| PATCH  | /api/challans/:id/cancel     | Sales | Cancel draft challan         |
 | PATCH  | /api/challans/:id/confirm    | Sales | Confirm challan + deduct stock |
-| GET    | /api/challans/:id/pdf        | ✅    | Download challan as PDF   |
+| GET    | /api/challans/:id/pdf        | ✅    | Download challan as PDF     |
 
 > **Full API documentation:** [`docs/API_DOCUMENTATION.md`](./docs/API_DOCUMENTATION.md)
 
@@ -214,6 +509,20 @@ Verifies the API routes and database connection status.
 - SSL required for Supabase connection
 - Input validation via Zod schemas
 
+```mermaid
+flowchart LR
+    Req[Incoming Request] --> Helmet[Helmet.js<br/>security headers]
+    Helmet --> CORS[CORS check<br/>allowed origins only]
+    CORS --> RateLimit[Rate limiter<br/>200 req / 15 min / IP]
+    RateLimit --> JWTCheck{Valid JWT?}
+    JWTCheck -- No --> Deny401[401 Unauthorized]
+    JWTCheck -- Yes --> RoleCheck{Role allowed<br/>for this route?}
+    RoleCheck -- No --> Deny403[403 Forbidden]
+    RoleCheck -- Yes --> Zod[Zod schema validation]
+    Zod -- Invalid --> Deny400[400 Bad Request]
+    Zod -- Valid --> Controller[Controller / Service logic]
+```
+
 ---
 
 ## 🔧 Available Scripts
@@ -247,6 +556,58 @@ npm run preview # Preview production build
 2. Build command: `npm run build`
 3. Output directory: `dist`
 
+```mermaid
+flowchart LR
+    subgraph GH[GitHub Repo]
+        BE[backend/]
+        FE[frontend/]
+    end
+    BE -- "auto-deploy on push" --> Render[Render<br/>npm run build → npm run start]
+    FE -- "auto-deploy on push" --> Vercel[Vercel<br/>npm run build → dist/]
+    Render <-- "VITE_API_URL" --> Vercel
+    Render --> Supabase[(Supabase PostgreSQL)]
+```
+
+---
+
+## 🧰 Local Dev Notes & Troubleshooting
+
+These are quick reference notes for local development on Windows (kept from the original project notes).
+
+**Find and kill a process holding port 5000:**
+```powershell
+netstat -ano | findstr :5000
+
+# Example output:
+# TCP    0.0.0.0:5000    0.0.0.0:0    LISTENING    25572
+# TCP    [::]:5000       [::]:0       LISTENING    25572
+
+taskkill /PID 25572 /F
+# SUCCESS: The process with PID 25572 has been terminated.
+```
+
+**Healthy backend startup looks like:**
+```
+[Backend] Server running on http://localhost:5000
+[Backend] Database connected
+```
+
+**Common HTTP status codes while developing:**
+
+| Code | Meaning |
+|------|---------|
+| 404  | API route missing |
+| 500  | Backend/database problem |
+| CORS error | Frontend/backend origin mismatch |
+| 401  | Wrong password/user, or missing/expired token |
+
+**Resetting for a fresh run:**
+
+| Server              | Port | Status      | Stop command                 |
+|---------------------|------|-------------|-------------------------------|
+| Backend             | 5000 | ⛔ Stopped  | `Ctrl + C` in its terminal    |
+| Frontend            | 5173 | ⛔ Stopped  | `Ctrl + C` in its terminal    |
+
 ---
 
 ## 📄 License
@@ -254,131 +615,5 @@ npm run preview # Preview production build
 MIT
 
 
+<img width="1536" height="1024" alt="gair" src="https://github.com/user-attachments/assets/732f432e-6007-4255-8c4f-04b31411f552" />
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
----- 
-<!-- how to dele this for new run. -->
-<!-- 
-
-
-netstat -ano | findstr :5000
-
-
-
-
-POST /api/auth/login 401
-
- -->
-
-
-
-
-
-<!-- CP    0.0.0.0:5000           0.0.0.0:0              LISTENING       25572
-  TCP    [::]:5000              [::]:0                 LISTENING       25572
-PS D:\project system\caseinfo> taskkill /PID 25572 /F
-SUCCESS: The process with PID 25572 has been terminated. -->
-
-
-<!-- [Backend] Server running on http://localhost:5000
-[Backend] Database connected -->
-
-
-<!-- 404 → API route missing
-500 → Backend/database problem
-CORS → frontend/backend connection issue
-401 → wrong password/user -->
-
-
-
-
-
-
-
-# 1. Backend Setup & Run
-
-# 1. Navigate to the backend directory
-cd backend
-
-# 2. Copy the template .env file and edit it with your credentials
-cp .env.example .env
-
-# 3. Install backend dependencies
-npm install
-
-# 4. (Optional) Run the seed script to create the demo accounts in your database
-npx tsx src/seed.ts
-
-# 5. Start the backend developer server (runs on port 5000)
-npm run dev
-
-
-
-# 2.Frontend Setup & Run
-
-# 1. Navigate to the frontend directory
-cd frontend
-
-# 2. Install frontend dependencies
-npm install
-
-# 3. Start the Vite development server (runs on http://localhost:5173)
-npm run dev
-
-
-
-
-# Terminal 1 — Backend
-cd backend
-npm run dev
-
-# Terminal 2 — Frontend
-cd frontend
-npm run dev
-
-
-
- Demo Logins
-Once the project is running, you can log in to the frontend dashboard using any of the following accounts (all use the password password123):
-
-Admin: admin@test.com (Full access)
-Sales: sales@test.com (Customers CRM & Sales Challans)
-Warehouse: warehouse@test.com (Products & Inventory Adjustments)
-Accounts: accounts@test.com (View-only for CRM & Challans)
-
-
-The reason we use demo/seeder accounts instead of "real" production accounts for this project setup is:
-
-Security & Best Practices: You should never hardcode or save real users' passwords/emails in the source code or git repository. If the project code is public, anyone could see the credentials.
-Testing Roles and Permissions: The project has Role-Based Access Control (RBAC) where different roles (Admin, Sales, Warehouse, Accounts) have different permissions. The seed script provides pre-made users for each role so you can instantly log in and test how the interface changes for each role.
-Database Portability: Since the database runs on Supabase (PostgreSQL), when you set up a new database connection, it starts empty. Running the seed command (npx tsx src/seed.ts) quickly populates your new database with test accounts to work with.
-How to use "Real" Accounts:
-The project is fully prepared to handle real users! The login endpoint securely hashes and compares passwords using bcryptjs and signs requests using secure JWT tokens.
-
-To use real accounts:
-
-You can insert a new user row directly into the users table in your Supabase SQL editor using a secure hashed password.
-Or, you can create a sign-up route/page to register new users programmatically.
-
-
-
-
-Server	Status  Stop: Press Ctrl + C in each terminal window.
-Backend (port 5000)	⛔ Stopped
-Frontend (port 5173)	⛔ Stopped#   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
- #   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
- 
