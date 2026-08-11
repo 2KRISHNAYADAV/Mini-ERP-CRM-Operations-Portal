@@ -344,63 +344,101 @@ flowchart LR
 ---
 
 ## 🗃 Database Model (High-Level)
+## Table `users`
 
-```mermaid
-erDiagram
-    USERS ||--o{ CHALLANS : creates
-    CUSTOMERS ||--o{ CHALLANS : "billed to"
-    CHALLANS ||--|{ CHALLAN_ITEMS : contains
-    PRODUCTS ||--o{ CHALLAN_ITEMS : "snapshotted into"
-    PRODUCTS ||--o{ STOCK_MOVEMENTS : "tracked by"
-    USERS ||--o{ STOCK_MOVEMENTS : records
+### Columns
 
-    USERS {
-        uuid id
-        string email
-        string password_hash
-        string role
-    }
-    CUSTOMERS {
-        uuid id
-        string name
-        string business
-        string gst
-        string mobile
-        string status
-        date follow_up_date
-    }
-    PRODUCTS {
-        uuid id
-        string sku
-        string name
-        numeric price
-        int stock_qty
-    }
-    CHALLANS {
-        uuid id
-        uuid customer_id
-        string status
-        numeric grand_total
-        timestamp created_at
-    }
-    CHALLAN_ITEMS {
-        uuid id
-        uuid challan_id
-        uuid product_id
-        string product_name_snapshot
-        string sku_snapshot
-        numeric price_snapshot
-        int quantity
-    }
-    STOCK_MOVEMENTS {
-        uuid id
-        uuid product_id
-        string direction
-        int quantity
-        string reason
-        timestamp created_at
-    }
-```
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `name` | `varchar` |  |
+| `email` | `varchar` |  Unique |
+| `password_hash` | `varchar` |  |
+| `role` | `varchar` |  |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `customers`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `customer_name` | `varchar` |  |
+| `mobile_number` | `varchar` |  Nullable |
+| `email` | `varchar` |  Nullable |
+| `business_name` | `varchar` |  Nullable |
+| `gst_number` | `varchar` |  Nullable |
+| `customer_type` | `varchar` |  Nullable |
+| `address` | `text` |  Nullable |
+| `status` | `varchar` |  Nullable |
+| `follow_up_date` | `date` |  Nullable |
+| `notes` | `text` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `products`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `product_name` | `varchar` |  |
+| `sku` | `varchar` |  Unique |
+| `category` | `varchar` |  Nullable |
+| `unit_price` | `numeric` |  |
+| `current_stock` | `int4` |  Nullable |
+| `min_stock_alert` | `int4` |  Nullable |
+| `location` | `varchar` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `stock_movements`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `product_id` | `int4` |  Nullable |
+| `quantity_changed` | `int4` |  |
+| `movement_type` | `varchar` |  |
+| `reason` | `varchar` |  Nullable |
+| `created_by` | `int4` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `challans`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `challan_number` | `varchar` |  Unique |
+| `customer_id` | `int4` |  Nullable |
+| `status` | `varchar` |  Nullable |
+| `total_quantity` | `int4` |  |
+| `created_by` | `int4` |  Nullable |
+| `created_at` | `timestamp` |  Nullable |
+
+## Table `challan_items`
+
+### Columns
+
+| Name | Type | Constraints |
+|------|------|-------------|
+| `id` | `int4` | Primary |
+| `challan_id` | `int4` |  Nullable |
+| `product_id` | `int4` |  Nullable |
+| `product_name_snapshot` | `varchar` |  |
+| `sku_snapshot` | `varchar` |  Nullable |
+| `unit_price_snapshot` | `numeric` |  Nullable |
+| `quantity` | `int4` |  |
+
+<img width="1536" height="1024" alt="gair" src="https://github.com/user-attachments/assets/189b43a2-f838-471f-9094-901565ceeb48" />
+<img width="1528" height="795" alt="supabase-schema-ggqkfpbnzokjalokuhps" src="https://github.com/user-attachments/assets/1e05ce8c-b54e-449e-9ad7-2796c5f07515" />
+
+
+
 
 > This is a simplified, illustrative model based on the modules described above — see `backend/schema.sql` for the authoritative schema.
 
@@ -575,3 +613,7 @@ taskkill /PID 25572 /F
 ## 📄 License
 
 MIT
+
+
+<img width="1536" height="1024" alt="gair" src="https://github.com/user-attachments/assets/732f432e-6007-4255-8c4f-04b31411f552" />
+
