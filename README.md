@@ -380,4 +380,5 @@ Or, you can create a sign-up route/page to register new users programmatically.
 Server	Status  Stop: Press Ctrl + C in each terminal window.
 Backend (port 5000)	⛔ Stopped
 Frontend (port 5173)	⛔ Stopped#   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
+ #   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
  
