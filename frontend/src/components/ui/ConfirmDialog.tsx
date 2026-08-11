@@ -23,11 +23,13 @@ export const ConfirmDialog = ({
   isDestructive = false,
   loading = false,
 }: ConfirmDialogProps) => (
-  <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-    <div style={{ textAlign: 'center', padding: '0.5rem 0 1.5rem' }}>
-      <AlertTriangle size={40} color={isDestructive ? '#ef4444' : '#f59e0b'} style={{ marginBottom: '1rem' }} />
-      <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{message}</p>
-      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+  <Modal
+    isOpen={isOpen}
+    onClose={onClose}
+    title={title}
+    size="sm"
+    footer={
+      <>
         <button className="btn btn-outline" onClick={onClose} disabled={loading}>
           Cancel
         </button>
@@ -38,7 +40,12 @@ export const ConfirmDialog = ({
         >
           {loading ? 'Processing...' : confirmLabel}
         </button>
-      </div>
+      </>
+    }
+  >
+    <div style={{ textAlign: 'center', padding: '1rem 0 0.5rem' }}>
+      <AlertTriangle size={40} color={isDestructive ? '#ef4444' : '#f59e0b'} style={{ marginBottom: '1rem' }} />
+      <p style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}>{message}</p>
     </div>
   </Modal>
 );

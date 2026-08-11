@@ -206,8 +206,21 @@ export default function Products() {
       </div>
 
       {/* Add / Edit Modal */}
-      <Modal isOpen={showModal} onClose={closeModal} title={editTarget ? 'Edit Product' : 'Add Product'} size="md">
-        <form onSubmit={handleSave}>
+      <Modal
+        isOpen={showModal}
+        onClose={closeModal}
+        title={editTarget ? 'Edit Product' : 'Add Product'}
+        size="md"
+        footer={
+          <>
+            <button type="button" className="btn btn-outline" onClick={closeModal}>Cancel</button>
+            <button form="product-form" type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Saving...' : editTarget ? 'Update Product' : 'Add Product'}
+            </button>
+          </>
+        }
+      >
+        <form id="product-form" onSubmit={handleSave}>
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Product Name *</label>
@@ -243,12 +256,6 @@ export default function Products() {
               <label className="form-label">Location / Bin</label>
               <input className="input" value={formData.location || ''} onChange={(e) => set('location', e.target.value)} placeholder="e.g., A-Shelf-3" />
             </div>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline" onClick={closeModal}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Saving...' : editTarget ? 'Update Product' : 'Add Product'}
-            </button>
           </div>
         </form>
       </Modal>

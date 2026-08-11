@@ -167,8 +167,21 @@ export default function Inventory() {
       </div>
 
       {/* Adjust Stock Modal */}
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title="Manual Stock Adjustment" size="sm">
-        <form onSubmit={handleAdjust}>
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Manual Stock Adjustment"
+        size="sm"
+        footer={
+          <>
+            <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
+            <button form="inventory-form" type="submit" className="btn btn-primary" disabled={saving}>
+              {saving ? 'Adjusting...' : 'Adjust Stock'}
+            </button>
+          </>
+        }
+      >
+        <form id="inventory-form" onSubmit={handleAdjust}>
           <div className="form-group">
             <label className="form-label">Product *</label>
             <select className="input" required value={form.product_id} onChange={(e) => setForm({ ...form, product_id: e.target.value })}>
@@ -199,12 +212,6 @@ export default function Inventory() {
           <div className="form-group">
             <label className="form-label">Reason</label>
             <input className="input" placeholder="e.g., Received from supplier" value={form.reason} onChange={(e) => setForm({ ...form, reason: e.target.value })} />
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Adjusting...' : 'Adjust Stock'}
-            </button>
           </div>
         </form>
       </Modal>
