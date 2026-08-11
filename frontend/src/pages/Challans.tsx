@@ -223,7 +223,34 @@ export default function Challans() {
       </div>
 
       {/* Create Challan Modal */}
-      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create Sales Challan" size="lg">
+      <Modal
+        isOpen={showCreate}
+        onClose={() => setShowCreate(false)}
+        title="Create Sales Challan"
+        size="lg"
+        footer={
+          <>
+            <button type="button" className="btn btn-outline" onClick={() => setShowCreate(false)}>Cancel</button>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => handleSubmit('Draft')}
+              disabled={saving}
+            >
+              Save as Draft
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => handleSubmit('Confirmed')}
+              disabled={saving}
+            >
+              <CheckCircle size={16} />
+              {saving ? 'Processing...' : 'Confirm & Reduce Stock'}
+            </button>
+          </>
+        }
+      >
         <div className="form-group">
           <label className="form-label">Customer *</label>
           <select className="input" value={customerId} onChange={(e) => setCustomerId(e.target.value)}>
@@ -291,27 +318,6 @@ export default function Challans() {
             <span>Total Qty: <strong>{totalQty}</strong></span>
           </div>
         )}
-
-        <div className="modal-footer">
-          <button type="button" className="btn btn-outline" onClick={() => setShowCreate(false)}>Cancel</button>
-          <button
-            type="button"
-            className="btn btn-outline"
-            onClick={() => handleSubmit('Draft')}
-            disabled={saving}
-          >
-            Save as Draft
-          </button>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => handleSubmit('Confirmed')}
-            disabled={saving}
-          >
-            <CheckCircle size={16} />
-            {saving ? 'Processing...' : 'Confirm & Reduce Stock'}
-          </button>
-        </div>
       </Modal>
 
       {/* View Challan Detail Modal */}
