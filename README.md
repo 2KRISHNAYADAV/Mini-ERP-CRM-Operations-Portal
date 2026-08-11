@@ -3,7 +3,9 @@
 A production-quality Mini ERP + CRM portal built with React TypeScript, Node.js Express TypeScript, and Supabase PostgreSQL.
 
 ---
+backen url run rend  - https://mini-erp-crm-operations-portal-e2ig.onrender.com/
 
+and fornt url run -https://mini-erp-crm-operations-portal-tuq2.vercel.app/
 ## 📦 Tech Stack
 
 | Layer    | Technology                        |
@@ -379,6 +381,8 @@ Or, you can create a sign-up route/page to register new users programmatically.
 
 Server	Status  Stop: Press Ctrl + C in each terminal window.
 Backend (port 5000)	⛔ Stopped
-Frontend (port 5173)	⛔ Stopped#   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
- #   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l  
+Frontend (port 5173)	⛔ Stopped#   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l 
+ 
+ #   M i n i - E R P - C R M - O p e r a t i o n s - P o r t a l 
+ 
  
