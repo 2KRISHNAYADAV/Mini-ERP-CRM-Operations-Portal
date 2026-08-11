@@ -30,6 +30,6 @@
     "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.11.6",
     "tsx": "^4.9.3",
-    "typescript": "^5.4.5"
+    "typescript": "5.4.5"
   }
 }
